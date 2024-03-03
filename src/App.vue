@@ -33,9 +33,6 @@
             <router-link to="/view" class="fw-medium" v-if="isAuthenticated"> View</router-link>
           </h3>
         </div>
-        <!-- <div class="col nav-item">
-          <h3><router-link to="/login" class="fw-medium"> Login</router-link></h3>
-        </div> -->
       </div>
     </div>
     <RouterView />
@@ -57,8 +54,6 @@ const isAuthenticated = computed(() => {
   console.log('computed: ', userStore.getIsAuthenticated)
   if (!userStore.getIsAuthenticated) {
     router.push('/login')
-  } else {
-    router.push('/edit')
   }
   return userStore.getIsAuthenticated
 })

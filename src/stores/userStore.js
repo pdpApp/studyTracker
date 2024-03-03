@@ -2,8 +2,10 @@ import { defineStore } from 'pinia'
 import { initializeApp } from 'firebase/app'
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth'
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 
 export const useUserStore = defineStore('userStore', () => {
+  const router = useRouter()
   // Your web app's Firebase configuration
   const firebaseConfig = {
     apiKey: 'AIzaSyAob8UnkeDAbsYRpRVtsyzApqub28k0DCA',
@@ -23,6 +25,7 @@ export const useUserStore = defineStore('userStore', () => {
   function login(email, password) {
     signInWithEmailAndPassword(auth, email, password).then((cred) => {
       console.log('user logged in: ' + cred.user)
+      router.push('/edit')
     })
   }
 
