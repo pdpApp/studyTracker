@@ -40,7 +40,7 @@
     <div class="mt-4" v-if="topicList.length > 0">
       <div v-for="(topic, index) in topicList" :key="topic.id" class="mt-3">
         <div class="row">
-          <div class="col">
+          <div class="col-4">
             <input
               class="form-control text-secondary"
               type="text"
@@ -49,7 +49,16 @@
               aria-label="default input example"
             />
           </div>
-          <div class="col-2 text-success fw-medium">{{ topic.totalHoursSpent }} hrs spent</div>
+          <div class="col-1 text-success fw-medium">{{ topic.totalHoursSpent }} hrs</div>
+          <div class="col-2">
+            <input
+              class="form-control text-secondary"
+              type="text"
+              placeholder="Topics studied..."
+              v-model="topicStudiedInputs[index]"
+              aria-label="default input example"
+            />
+          </div>
           <div class="col-2">
             <input
               class="form-control"
@@ -70,67 +79,47 @@
           <div class="col-2">
             <button
               type="button"
-              class="btn btn-outline-success"
+              class="btn btn-outline-success btn"
               @click="takeSnapshot(topic, index)"
             >
-              Take Snapshot
+              Log Efforts
             </button>
           </div>
         </div>
       </div>
+      <div class="mt-4"><hr class="border border-success border-1 opacity-25" /></div>
+      <div class="text-success fw-medium">Total {{ totalEffortHrs }} hrs of efforts</div>
     </div>
   </div>
 </template>
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useStudyTrackerStore } from '../stores/studyTrackerStore.js'
+import { useUtility } from '@/composables/utility.js'
 
 const studyTrackerStore = useStudyTrackerStore()
+const utility = useUtility()
+
 const newTopicName = ref('')
+const topicStudiedInputs = []
 const snapshotDateInputs = []
 const halfHourInputs = []
+const totalEffortHrs = ref(0)
 
-// const topicList1 = ref([
-//   {
-//     topicId: 1,
-//     topicName: 'Javascript Under The hood',
-//     topicAddedDate: '2024-02-25',
-//     snapshotDate: '',
-//     totalHoursSpent: 15,
-//     logHalfHrs: 0
-//   },
-//   {
-//     topicId: 2,
-//     topicName: 'DSA Udemy course',
-//     topicAddedDate: '2024-02-25',
-//     snapshotDate: new Date().toISOString().split('T')[0],
-//     totalHoursSpent: 15,
-//     logHalfHrs: 0
-//   },
-//   {
-//     topicId: 3,
-//     topicName: 'Grokking the system design interview',
-//     topicAddedDate: '2024-02-25',
-//     snapshotDate: '',
-//     totalHoursSpent: 15,
-//     logHalfHrs: 0
-//   },
-//   {
-//     topicId: 4,
-//     topicName: 'Head First OOAD',
-//     topicAddedDate: '2024-02-25',
-//     snapshotDate: '',
-//     totalHoursSpent: 15,
-//     logHalfHrs: 0
-//   }
-// ])
 onMounted(() => {
   studyTrackerStore.fetchTrackingData()
 })
 
 const topicList = computed(() => {
-  console.log(studyTrackerStore.getTrackingData.value)
   return studyTrackerStore.getTrackingData.value
+})
+
+watch(topicList, (newVal) => {
+  totalEffortHrs.value = 0
+  newVal.forEach((topic) => {
+    totalEffortHrs.value += topic.totalHoursSpent
+  })
+  console.log(totalEffortHrs.value)
 })
 
 function addTopic() {
@@ -143,10 +132,12 @@ function takeSnapshot(topic, index) {
     snapshotDate: snapshotDateInputs[index]
       ? snapshotDateInputs[index]
       : new Date().toISOString().split('T')[0],
-    halfHoursSpent: halfHourInputs[index]
+    halfHoursSpent: halfHourInputs[index],
+    topicsStudied: utility.returnBlankStringIfNullOrUndefined(topicStudiedInputs[index])
   })
   snapshotDateInputs[index] = ''
   halfHourInputs[index] = 0
+  topicStudiedInputs[index] = ''
 }
 </script>
 <style scoped>

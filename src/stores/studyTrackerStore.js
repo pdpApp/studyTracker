@@ -25,12 +25,10 @@ export const useStudyTrackerStore = defineStore('studyTrackerStore', () => {
   //get data initially and listen to any changes (real time data)
   function fetchTrackingData() {
     onSnapshot(q, (snapshot) => {
-      console.log(snapshot.docs)
       trackingData.value = []
       snapshot.docs.forEach((doc) => {
         trackingData.value.push({ ...doc.data(), id: doc.id })
       })
-      console.log(trackingData.value)
     })
   }
 

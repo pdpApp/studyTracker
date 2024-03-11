@@ -39,5 +39,11 @@ export function useUtility() {
     11: 31
   }
 
-  return { dayMap, monthMap, monthDaysCountMap }
+  function returnBlankStringIfNullOrUndefined(value) {
+    if (value === null || value === undefined) {
+      return ''
+    }
+    return value
+  }
+  return { dayMap, monthMap, monthDaysCountMap, returnBlankStringIfNullOrUndefined }
 }
