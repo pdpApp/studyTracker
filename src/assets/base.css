@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
 /* color palette from <https://github.com/vuejs/theme> */
 :root {
   --vt-c-white: #ffffff;
@@ -67,6 +68,10 @@ body {
     background-color 0.5s;
   line-height: 1.6;
   font-family:
+    'Nunito',
+    helvetica,
+    Arial,
+    sans-serif,
     Inter,
     -apple-system,
     BlinkMacSystemFont,
@@ -78,7 +83,7 @@ body {
     'Fira Sans',
     'Droid Sans',
     'Helvetica Neue',
-    sans-serif;
+    sans-serif !important;
   font-size: 16px;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;

@@ -24,6 +24,21 @@ export function useUtility() {
     11: 'Dec'
   }
 
+  const monthDblDigitMap = {
+    0: '01',
+    1: '02',
+    2: '03',
+    3: '04',
+    4: '05',
+    5: '06',
+    6: '07',
+    7: '08',
+    8: '09',
+    9: '10',
+    10: '11',
+    11: '12'
+  }
+
   const monthDaysCountMap = {
     0: 31,
     1: 29,
@@ -45,5 +60,11 @@ export function useUtility() {
     }
     return value
   }
-  return { dayMap, monthMap, monthDaysCountMap, returnBlankStringIfNullOrUndefined }
+  return {
+    dayMap,
+    monthMap,
+    monthDblDigitMap,
+    monthDaysCountMap,
+    returnBlankStringIfNullOrUndefined
+  }
 }

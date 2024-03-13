@@ -117,9 +117,10 @@ const topicList = computed(() => {
 watch(topicList, (newVal) => {
   totalEffortHrs.value = 0
   newVal.forEach((topic) => {
-    totalEffortHrs.value += topic.totalHoursSpent
+    if (topic.topicName !== 'Nothing') {
+      totalEffortHrs.value += topic.totalHoursSpent
+    }
   })
-  console.log(totalEffortHrs.value)
 })
 
 function addTopic() {

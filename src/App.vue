@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="row justify-content-end">
+    <div class="container row justify-content-end">
       <div class="col-1">
         <button
           type="button"
@@ -22,15 +22,19 @@
     </div>
 
     <div class="container text-center row justify-content-center">
-      <div class="w-50 mt-0 row">
+      <div class="w-50 mt-0 row header">
         <div class="col nav-item">
           <h3>
-            <router-link to="/edit" class="fw-medium" v-if="isAuthenticated"> Edit </router-link>
+            <router-link to="/edit" class="header__nav-name" v-if="isAuthenticated">
+              Edit
+            </router-link>
           </h3>
         </div>
         <div class="col nav-item">
           <h3>
-            <router-link to="/view" class="fw-medium" v-if="isAuthenticated"> View</router-link>
+            <router-link to="/view" class="header__nav-name" v-if="isAuthenticated">
+              View</router-link
+            >
           </h3>
         </div>
       </div>
@@ -63,21 +67,20 @@ const isAuthenticated = computed(() => {
 .bg-color1 {
   background-color: #eee;
 }
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
+.header {
+  &__nav-name {
+    font-weight: 600;
+  }
 }
 .nav-item {
   &:hover {
     cursor: pointer;
   }
   & a {
-    color: rgb(24, 24, 24);
+    color: rgb(41, 41, 41);
     text-decoration: none;
     &:hover {
-      color: rgb(131, 131, 131);
+      color: rgb(141, 141, 141);
     }
   }
 }
