@@ -1,6 +1,6 @@
 <template>
   <div class="row gap-2">
-    <div class="col-5">
+    <div class="col-5 mt-4">
       <div v-for="topic in topicList" :key="topic.id" class="mt-3">
         <a
           class="topicName"
@@ -11,52 +11,61 @@
         >
       </div>
     </div>
-    <div v-if="isHeatMapVisisble" id="chart" class="col-3">
-      {{ chartHeading }}
-      <div class="row daysRow"></div>
-      <div class="calendarContainer">
-        <div class="col days">Mon</div>
-        <div class="col days">Tue</div>
-        <div class="col days">Wed</div>
-        <div class="col days">Thu</div>
-        <div class="col days">Fri</div>
-        <div class="col days">Sat</div>
-        <div class="col days">Sun</div>
-        <div
-          v-for="(dateObj, index) in wholeYearMonthWise['03']"
-          :key="index"
-          class="day"
-          :style="{
-            'grid-column':
-              index === 0 ? utility.dayMap[wholeYearMonthWise['03'][0].date.getDay()] : 'auto'
-          }"
-          :class="{ highlight: studyDateHashSet.has(dateObj.dateString) }"
-        >
-          {{ dateObj.date.getDate() }}
+    <div v-if="isHeatMapVisisble" id="chart" class="col-5 mt-5">
+      <h4>
+        {{ chartHeading }}
+      </h4>
+      <div class="row heatmap-container mt-4">
+        <div class="col-4">
+          <h5>March</h5>
+          <div class="row daysRow"></div>
+          <div class="calendarContainer">
+            <div class="col days">Mon</div>
+            <div class="col days">Tue</div>
+            <div class="col days">Wed</div>
+            <div class="col days">Thu</div>
+            <div class="col days">Fri</div>
+            <div class="col days">Sat</div>
+            <div class="col days">Sun</div>
+            <div
+              v-for="(dateObj, index) in wholeYearMonthWise['03']"
+              :key="index"
+              class="day"
+              :style="{
+                'grid-column':
+                  index === 0 ? utility.dayMap[wholeYearMonthWise['03'][0].date.getDay()] : 'auto'
+              }"
+              :class="{ highlight: studyDateHashSet.has(dateObj.dateString) }"
+            >
+              {{ dateObj.date.getDate() }}
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="calendarContainer">
-        <div class="col days">Mon</div>
-        <div class="col days">Tue</div>
-        <div class="col days">Wed</div>
-        <div class="col days">Thu</div>
-        <div class="col days">Fri</div>
-        <div class="col days">Sat</div>
-        <div class="col days">Sun</div>
-        <div
-          v-for="(dateObj, index) in wholeYearMonthWise['04']"
-          :key="index"
-          class="day"
-          :style="{
-            'grid-column':
-              index === 0 ? utility.dayMap[wholeYearMonthWise['04'][0].date.getDay()] : 'auto'
-          }"
-        >
-          {{ dateObj.date.getDate() }}
+        <div class="col-4">
+          <h5>April</h5>
+          <div class="calendarContainer">
+            <div class="col days">Mon</div>
+            <div class="col days">Tue</div>
+            <div class="col days">Wed</div>
+            <div class="col days">Thu</div>
+            <div class="col days">Fri</div>
+            <div class="col days">Sat</div>
+            <div class="col days">Sun</div>
+            <div
+              v-for="(dateObj, index) in wholeYearMonthWise['04']"
+              :key="index"
+              class="day"
+              :style="{
+                'grid-column':
+                  index === 0 ? utility.dayMap[wholeYearMonthWise['04'][0].date.getDay()] : 'auto'
+              }"
+            >
+              {{ dateObj.date.getDate() }}
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    <div class="col">details</div>
   </div>
 </template>
 <script setup>
@@ -141,7 +150,10 @@ function showHeatMap(topic) {
     align-items: center;
   }
 }
-
+.heatmap-container {
+  width: 1200px;
+  overflow-x: auto;
+}
 .topicName {
   font-size: 1.5rem;
 }
@@ -152,13 +164,18 @@ function showHeatMap(topic) {
 .day {
   width: 40px;
   height: 40px;
-  border: 1px solid rgb(100, 87, 85);
-  padding: 3px 5px;
+  //border: 1px solid rgb(100, 87, 85);
+  background-color: #eee;
+  padding: 3px 7px;
+  color: #3d3d3d;
+  border-radius: 6px;
 }
 .highlight {
   background-color: #3ac282;
+  color: #fff;
 }
 .calendarContainer {
+  width: 310px;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   grid-template-rows: repeat(7, 1fr);
