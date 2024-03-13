@@ -55,13 +55,6 @@
           {{ dateObj.date.getDate() }}
         </div>
       </div>
-      <!-- <apexchart
-        type="heatmap"
-        width="400"
-        height="450"
-        :options="chartOptions"
-        :series="series"
-      ></apexchart> -->
     </div>
     <div class="col">details</div>
   </div>
@@ -135,14 +128,9 @@ function createDateRepresentationObject(dateVal) {
 
 const chartHeading = ref('')
 const isHeatMapVisisble = ref(false)
-let firstdate = ref(new Date())
-const totalDays = ref(0)
 function showHeatMap(topic) {
   chartHeading.value = topic.topicName
   isHeatMapVisisble.value = true
-  let today = new Date()
-  firstdate.value = new Date(utility.monthMap[today.getMonth()] + ' 01 ' + today.getFullYear())
-  totalDays.value = utility.monthDaysCountMap[today.getMonth()]
 }
 </script>
 <style lang="scss" scoped>
