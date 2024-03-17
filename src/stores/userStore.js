@@ -24,7 +24,6 @@ export const useUserStore = defineStore('userStore', () => {
 
   function login(email, password) {
     signInWithEmailAndPassword(auth, email, password).then((cred) => {
-      console.log('user logged in: ' + cred.user)
       router.push('/edit')
     })
   }

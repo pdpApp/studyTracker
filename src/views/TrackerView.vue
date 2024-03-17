@@ -17,7 +17,12 @@
       </h4>
       <div class="row heatmap-container mt-4">
         <div class="col-4">
-          <h5>March</h5>
+          <div class="row align-items-baseline">
+            <div class="col-2"><h5>March</h5></div>
+            <div class="col-1">
+              <span id="dayToolTip">{{ hoursSpentPerDay }}</span>
+            </div>
+          </div>
           <div class="row daysRow"></div>
           <div class="calendarContainer">
             <div class="col days">Mon</div>
@@ -35,7 +40,9 @@
                 'grid-column':
                   index === 0 ? utility.dayMap[wholeYearMonthWise['03'][0].date.getDay()] : 'auto'
               }"
-              :class="{ highlight: studyDateHashSet.has(dateObj.dateString) }"
+              :class="{ highlight: studyDateAndEffortsHashMap.has(dateObj.dateString) }"
+              @mouseenter="displayHoursSpent(dateObj.dateString)"
+              @mouseleave="hideHoursSpent()"
             >
               {{ dateObj.date.getDate() }}
             </div>
@@ -69,7 +76,7 @@
   </div>
 </template>
 <script setup>
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useStudyTrackerStore } from '../stores/studyTrackerStore.js'
 import { useUtility } from '@/composables/utility.js'
 
@@ -86,21 +93,56 @@ const topicList = computed(() => {
 
 const studyDateHashSet = new Set()
 watch(topicList, (newVal) => {
-  console.log(newVal)
   newVal.forEach((topic) => {
-    console.log(topic.trackingHistory)
     topic.trackingHistory.forEach((snapshotRecord) => {
-      console.log(snapshotRecord.snapshotDate)
       studyDateHashSet.add(snapshotRecord.snapshotDate)
       let date = new Date(snapshotRecord.snapshotDate)
-      console.log(date)
     })
   })
-  console.log(studyDateHashSet)
-  console.log(studyDateHashSet.has('2024-04-06'))
 })
 
-console.log('----------------------------')
+const studyDateAndEffortsHashMap = new Map()
+watch(topicList, (newVal) => {
+  newVal.forEach((topic) => {
+    topic.trackingHistory.forEach((snapshotRecord) => {
+      if (studyDateAndEffortsHashMap.has(snapshotRecord.snapshotDate)) {
+        let hoursSpent = studyDateAndEffortsHashMap.get(snapshotRecord.snapshotDate)
+        if (snapshotRecord.snapshotDate === '2024-03-09') {
+        }
+        studyDateAndEffortsHashMap.set(
+          snapshotRecord.snapshotDate,
+          hoursSpent + snapshotRecord.halfHoursSpent / 2
+        )
+      } else {
+        if (snapshotRecord.snapshotDate === '2024-03-09') {
+        }
+        studyDateAndEffortsHashMap.set(
+          snapshotRecord.snapshotDate,
+          snapshotRecord.halfHoursSpent / 2
+        )
+      }
+    })
+  })
+
+  calculateMinAndMaxHoursSpent()
+})
+
+let min = 0
+let max = 0
+function calculateMinAndMaxHoursSpent() {
+  const valueIterator = studyDateAndEffortsHashMap.values()
+  min = valueIterator.next().value
+  max = min
+  for (const entry of studyDateAndEffortsHashMap) {
+    if (entry[1] < min) {
+      min = entry[1]
+    }
+    if (entry[1] > max) {
+      max = entry[1]
+    }
+  }
+}
+
 const wholeYear = []
 const wholeYearMonthWise = {}
 let firstJan2024 = new Date('2024 01 Jan')
@@ -118,11 +160,7 @@ for (let i = 0; i < 366; i++) {
   }
   wholeYear.push(createDateRepresentationObject(date))
   nextDate.setDate(nextDate.getDate() + 1)
-  //console.log(nextDate)
 }
-console.log(wholeYear)
-console.log(wholeYearMonthWise)
-console.log('----------------------------')
 function createDateRepresentationObject(dateVal) {
   return {
     date: dateVal,
@@ -140,6 +178,21 @@ const isHeatMapVisisble = ref(false)
 function showHeatMap(topic) {
   chartHeading.value = topic.topicName
   isHeatMapVisisble.value = true
+}
+
+let hoursSpentPerDay = 0
+function displayHoursSpent(dateString) {
+  hoursSpentPerDay = studyDateAndEffortsHashMap.has(dateString)
+    ? studyDateAndEffortsHashMap.get(dateString)
+    : 0
+  const elem = document.getElementById('dayToolTip')
+  elem.textContent = hoursSpentPerDay + ' hrs'
+  elem.style.display = 'block'
+}
+
+function hideHoursSpent() {
+  const elem = document.getElementById('dayToolTip')
+  elem.style.display = 'none'
 }
 </script>
 <style lang="scss" scoped>
@@ -161,6 +214,18 @@ function showHeatMap(topic) {
   padding: 0px;
   text-align: center;
 }
+#dayToolTip {
+  display: none;
+  font-size: 0.8rem;
+  width: 50px;
+  height: 30px;
+  left: 20px;
+  bottom: 50px;
+  background-color: #b5dac9;
+  padding: 6px 5px;
+  color: #2c2c2c;
+  border-radius: 5px;
+}
 .day {
   width: 40px;
   height: 40px;
@@ -169,6 +234,9 @@ function showHeatMap(topic) {
   padding: 3px 7px;
   color: #3d3d3d;
   border-radius: 6px;
+  :hover .dayToolTip {
+    display: block;
+  }
 }
 .highlight {
   background-color: #3ac282;

@@ -55,7 +55,6 @@ function logout() {
 }
 
 const isAuthenticated = computed(() => {
-  console.log('computed: ', userStore.getIsAuthenticated)
   if (!userStore.getIsAuthenticated) {
     router.push('/login')
   }
