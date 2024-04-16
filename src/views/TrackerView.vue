@@ -15,12 +15,14 @@
       <h4>
         {{ chartHeading }}
       </h4>
-      <div class="row heatmap-container mt-4">
-        <div class="col-4">
+      <div class="heatmap-container mt-4">
+        <div class="months" v-for="month in months" :key="month">
           <div class="row align-items-baseline">
-            <div class="col-2"><h5>March</h5></div>
+            <div class="col-2">
+              <h5>{{ utility.monthDblDigitToNameMap[month] }}</h5>
+            </div>
             <div class="col-1">
-              <span id="dayToolTip">{{ hoursSpentPerDay }}</span>
+              <span class="dayToolTip" :id="'dayToolTip' + month">{{ hoursSpentPerDay }}</span>
             </div>
           </div>
           <div class="row daysRow"></div>
@@ -33,22 +35,22 @@
             <div class="col days">Sat</div>
             <div class="col days">Sun</div>
             <div
-              v-for="(dateObj, index) in wholeYearMonthWise['03']"
+              v-for="(dateObj, index) in wholeYearMonthWise[month]"
               :key="index"
               class="day"
               :style="{
                 'grid-column':
-                  index === 0 ? utility.dayMap[wholeYearMonthWise['03'][0].date.getDay()] : 'auto'
+                  index === 0 ? utility.dayMap[wholeYearMonthWise[month][0].date.getDay()] : 'auto'
               }"
               :class="{ highlight: studyDateAndEffortsHashMap.has(dateObj.dateString) }"
-              @mouseenter="displayHoursSpent(dateObj.dateString)"
-              @mouseleave="hideHoursSpent()"
+              @mouseenter="displayHoursSpent(dateObj.dateString, month)"
+              @mouseleave="hideHoursSpent(month)"
             >
               {{ dateObj.date.getDate() }}
             </div>
           </div>
         </div>
-        <div class="col-4">
+        <!-- <div class="children">
           <h5>April</h5>
           <div class="calendarContainer">
             <div class="col days">Mon</div>
@@ -66,11 +68,14 @@
                 'grid-column':
                   index === 0 ? utility.dayMap[wholeYearMonthWise['04'][0].date.getDay()] : 'auto'
               }"
+              :class="{ highlight: studyDateAndEffortsHashMap.has(dateObj.dateString) }"
+              @mouseenter="displayHoursSpent(dateObj.dateString)"
+              @mouseleave="hideHoursSpent()"
             >
               {{ dateObj.date.getDate() }}
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -161,6 +166,8 @@ for (let i = 0; i < 366; i++) {
   wholeYear.push(createDateRepresentationObject(date))
   nextDate.setDate(nextDate.getDate() + 1)
 }
+
+console.log(wholeYearMonthWise)
 function createDateRepresentationObject(dateVal) {
   return {
     date: dateVal,
@@ -181,19 +188,21 @@ function showHeatMap(topic) {
 }
 
 let hoursSpentPerDay = 0
-function displayHoursSpent(dateString) {
+function displayHoursSpent(dateString, month) {
   hoursSpentPerDay = studyDateAndEffortsHashMap.has(dateString)
     ? studyDateAndEffortsHashMap.get(dateString)
     : 0
-  const elem = document.getElementById('dayToolTip')
+  const elem = document.getElementById('dayToolTip' + month)
   elem.textContent = hoursSpentPerDay + ' hrs'
   elem.style.display = 'block'
 }
 
-function hideHoursSpent() {
-  const elem = document.getElementById('dayToolTip')
+function hideHoursSpent(month) {
+  const elem = document.getElementById('dayToolTip' + month)
   elem.style.display = 'none'
 }
+
+const months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
 </script>
 <style lang="scss" scoped>
 @media (min-width: 1024px) {
@@ -204,8 +213,21 @@ function hideHoursSpent() {
   }
 }
 .heatmap-container {
-  width: 1200px;
-  overflow-x: auto;
+  width: 43rem; /* Set the width of the div */
+  //height: 200px; /* Set the height of the div */
+  overflow-x: auto; /* Enable horizontal scrollbar */
+  white-space: nowrap; /* Prevent line breaks */
+}
+.months {
+  display: inline-block; /* Display child divs inline */
+  margin-right: 2.5rem; /* Add some space between child divs */
+}
+.calendarContainer {
+  width: 310px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(7, 1fr);
+  gap: 3px 3px;
 }
 .topicName {
   font-size: 1.5rem;
@@ -214,7 +236,7 @@ function hideHoursSpent() {
   padding: 0px;
   text-align: center;
 }
-#dayToolTip {
+.dayToolTip {
   display: none;
   font-size: 0.8rem;
   width: 50px;
@@ -229,24 +251,37 @@ function hideHoursSpent() {
 .day {
   width: 40px;
   height: 40px;
-  //border: 1px solid rgb(100, 87, 85);
   background-color: #eee;
   padding: 3px 7px;
   color: #3d3d3d;
   border-radius: 6px;
-  :hover .dayToolTip {
-    display: block;
-  }
 }
 .highlight {
   background-color: #3ac282;
   color: #fff;
 }
-.calendarContainer {
-  width: 310px;
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: repeat(7, 1fr);
-  gap: 3px 3px;
+
+/* For WebKit-based browsers (Chrome, Safari, etc.) */
+/* Styling horizontal scrollbar */
+::-webkit-scrollbar:horizontal {
+  height: 1px !important; /* Height of the scrollbar */
+}
+
+/* Track */
+::-webkit-scrollbar-track:horizontal {
+  height: 1px !important; /* Height of the scrollbar */
+  background: #d61414f1; /* Color of the track */
+}
+
+/* Thumb */
+::-webkit-scrollbar-thumb:horizontal {
+  height: 1px !important; /* Height of the scrollbar */
+  background: #888; /* Color of the thumb */
+}
+
+/* Thumb on hover */
+::-webkit-scrollbar-thumb:horizontal:hover {
+  height: 1px !important; /* Height of the scrollbar */
+  background: #555; /* Color of the thumb on hover */
 }
 </style>
