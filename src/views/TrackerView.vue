@@ -1,6 +1,11 @@
 <template>
   <div class="row gap-2">
     <div class="col-5 mt-4">
+      <div class="mt-3">
+        <a class="topicName" @click="showHeatMap(0)" target="_blank" rel="noopener noreferrer"
+          >All topics</a
+        >
+      </div>
       <div v-for="topic in topicList" :key="topic.id" class="mt-3">
         <a
           class="topicName"
@@ -12,7 +17,7 @@
       </div>
     </div>
     <div v-if="isHeatMapVisisble" id="chart" class="col-5 mt-5">
-      <h4>
+      <h4 class="chart-heading">
         {{ chartHeading }}
       </h4>
       <div class="heatmap-container mt-4">
@@ -106,31 +111,33 @@ watch(topicList, (newVal) => {
   })
 })
 
-const studyDateAndEffortsHashMap = new Map()
+let studyDateAndEffortsHashMap
 watch(topicList, (newVal) => {
-  newVal.forEach((topic) => {
+  prepareHeatMapData(newVal)
+  calculateMinAndMaxHoursSpent()
+})
+
+function prepareHeatMapData(topicList, topicID = 0) {
+  studyDateAndEffortsHashMap = new Map()
+  topicList.forEach((topic) => {
     topic.trackingHistory.forEach((snapshotRecord) => {
-      if (studyDateAndEffortsHashMap.has(snapshotRecord.snapshotDate)) {
-        let hoursSpent = studyDateAndEffortsHashMap.get(snapshotRecord.snapshotDate)
-        if (snapshotRecord.snapshotDate === '2024-03-09') {
+      if (topicID === topic.id || topicID === 0) {
+        if (studyDateAndEffortsHashMap.has(snapshotRecord.snapshotDate)) {
+          let hoursSpent = studyDateAndEffortsHashMap.get(snapshotRecord.snapshotDate)
+          studyDateAndEffortsHashMap.set(
+            snapshotRecord.snapshotDate,
+            hoursSpent + snapshotRecord.halfHoursSpent / 2
+          )
+        } else {
+          studyDateAndEffortsHashMap.set(
+            snapshotRecord.snapshotDate,
+            snapshotRecord.halfHoursSpent / 2
+          )
         }
-        studyDateAndEffortsHashMap.set(
-          snapshotRecord.snapshotDate,
-          hoursSpent + snapshotRecord.halfHoursSpent / 2
-        )
-      } else {
-        if (snapshotRecord.snapshotDate === '2024-03-09') {
-        }
-        studyDateAndEffortsHashMap.set(
-          snapshotRecord.snapshotDate,
-          snapshotRecord.halfHoursSpent / 2
-        )
       }
     })
   })
-
-  calculateMinAndMaxHoursSpent()
-})
+}
 
 let min = 0
 let max = 0
@@ -167,7 +174,6 @@ for (let i = 0; i < 366; i++) {
   nextDate.setDate(nextDate.getDate() + 1)
 }
 
-console.log(wholeYearMonthWise)
 function createDateRepresentationObject(dateVal) {
   return {
     date: dateVal,
@@ -183,6 +189,12 @@ function createDateRepresentationObject(dateVal) {
 const chartHeading = ref('')
 const isHeatMapVisisble = ref(false)
 function showHeatMap(topic) {
+  if (topic === 0) {
+    prepareHeatMapData(topicList.value, 0)
+  } else {
+    prepareHeatMapData(topicList.value, topic.id)
+  }
+
   chartHeading.value = topic.topicName
   isHeatMapVisisble.value = true
 }
@@ -231,6 +243,15 @@ const months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11'
 }
 .topicName {
   font-size: 1.5rem;
+  text-decoration: none;
+  cursor: pointer;
+  background: linear-gradient(to right, #812a02, #996900);
+  -webkit-background-clip: text; /* Clip text to the background */
+  background-clip: text;
+  color: transparent; /* Make text transparent */
+}
+.chart-heading {
+  color: #3ac282;
 }
 .days {
   padding: 0px;
